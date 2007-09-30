@@ -1,0 +1,14 @@
+Build.PL
+Changes
+lib/Net/OAuth/AccessTokenRequest.pm
+lib/Net/OAuth/ProtectedResourceRequest.pm
+lib/Net/OAuth/Request.pm
+lib/Net/OAuth/RequestTokenRequest.pm
+lib/Net/OAuth/SignatureMethod/HMAC_SHA1.pm
+lib/Net/OAuth/SignatureMethod/PLAINTEXT.pm
+lib/Net/OAuth/SignatureMethod/RSA_SHA1.pm
+MANIFEST			This list of files
+README
+t/01-spec.t
+Makefile.PL
+META.yml
