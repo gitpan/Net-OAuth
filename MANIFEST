@@ -7,8 +7,11 @@ lib/Net/OAuth/RequestTokenRequest.pm
 lib/Net/OAuth/SignatureMethod/HMAC_SHA1.pm
 lib/Net/OAuth/SignatureMethod/PLAINTEXT.pm
 lib/Net/OAuth/SignatureMethod/RSA_SHA1.pm
+Makefile.PL
 MANIFEST			This list of files
+META.yml
 README
 t/01-spec.t
-Makefile.PL
-META.yml
+t/02-rsa.t
+t/rsakey
+t/rsakey.pub

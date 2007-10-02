@@ -1,29 +1,23 @@
 package Net::OAuth::SignatureMethod::RSA_SHA1;
 use warnings;
 use strict;
-use Crypt::RSA::SS::PKCS1v15;
+use MIME::Base64;
 
 sub sign {
     my $self = shift;
     my $request = shift;
-    my $pkcs = new Crypt::RSA::SS::PKCS1v15 (Digest => 'SHA1');
-    my $signature = $pkcs->sign(
-        Message => $request->signature_base_string,
-        Key     => $request->signature_key,
-    ) || die $pkcs->errstr;
-    return $signature
+    die '$request->signature_key must be an RSA key object (e.g. Crypt::OpenSSL::RSA) that can sign($text)'
+        unless UNIVERSAL::can($request->signature_key, 'sign');
+    return encode_base64($request->signature_key->sign($request->signature_base_string), "");
 }
 
 sub verify {
     my $self = shift;
     my $request = shift;
-    my $result = $pkcs->sign(
-        Message => $request->signature_base_string,
-        Key     => $request->signature_key,
-        Signature => $request->signature,
-    );
-    die $pkcs->errstr if !$result and $pkcs->errstr ne 'Invalid signature.'
-    return $result;
+    my $key = shift || $request->signature_key;
+    die 'You must pass an RSA key object (e.g. Crypt::OpenSSL::RSA) that can verify($text,$sig)'
+        unless UNIVERSAL::can($request->signature_key, 'verify');
+    return $key->verify($request->signature_base_string, decode_base64($request->signature));
 }
 
 =head1 NAME

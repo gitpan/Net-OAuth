@@ -5,7 +5,7 @@ use base qw/Class::Data::Inheritable Class::Accessor/;
 use URI::Escape;
 use UNIVERSAL::require;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 __PACKAGE__->mk_classdata(required_request_params => [qw/
     consumer_key
@@ -147,13 +147,13 @@ sub signature_key {
 sub sign {
     my $self = shift;
     my $class = $self->_signature_method_class;
-    $self->signature($class->sign($self));
+    $self->signature($class->sign($self, @_));
 }
 
 sub verify {
     my $self = shift;
     my $class = $self->_signature_method_class;
-    return $class->verify($self);
+    return $class->verify($self, @_);
 }
 
 sub _signature_method_class {
