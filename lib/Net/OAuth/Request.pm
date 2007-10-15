@@ -5,7 +5,7 @@ use base qw/Class::Data::Inheritable Class::Accessor/;
 use URI::Escape;
 use UNIVERSAL::require;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 __PACKAGE__->mk_classdata(required_request_params => [qw/
     consumer_key
@@ -177,7 +177,7 @@ sub from_authorization_header {
     my $class = ref $proto || $proto;
     my $header = shift;
     my %extra_params = @_;
-    my @header = split /\s+,\s+/, $header;
+    my @header = split /[\s]*,[\s]*/, $header;
     shift @header;
     my %params;
     foreach my $pair (@header) {
@@ -185,6 +185,7 @@ sub from_authorization_header {
         if (defined $k and defined $v) {
             $v =~ s/(^"|"$)//g;
             ($k,$v) = map decode($_), $k, $v;
+            $k =~ s/^oauth_//;
             $params{$k} = $v;
         }
     }
