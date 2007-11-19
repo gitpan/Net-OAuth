@@ -1,6 +1,6 @@
 ---
 name: Net-OAuth
-version: 0.04
+version: 0.05
 author:
   - 'Keith Grennan <kgrennan@cpan.org>'
 abstract: An implementation of the OAuth protocol
@@ -21,7 +21,7 @@ provides:
     file: lib/Net/OAuth/ProtectedResourceRequest.pm
   Net::OAuth::Request:
     file: lib/Net/OAuth/Request.pm
-    version: 0.04
+    version: 0.05
   Net::OAuth::RequestTokenRequest:
     file: lib/Net/OAuth/RequestTokenRequest.pm
   Net::OAuth::SignatureMethod::HMAC_SHA1:
