@@ -2,8 +2,10 @@ package Net::OAuth::Request;
 use warnings;
 use strict;
 use base qw/Net::OAuth::Message/;
+use URI;
+use URI::QueryParam;
 
-our $VERSION = '0.14';
+our $VERSION = '0.15';
 
 __PACKAGE__->mk_classdata(required_message_params => [qw/
     consumer_key
@@ -31,7 +33,7 @@ __PACKAGE__->mk_classdata(optional_api_params => [qw/
 
 __PACKAGE__->mk_classdata(signature_elements => [qw/
     request_method
-    request_url
+    normalized_request_url
     normalized_message_parameters
     /]);
 
@@ -64,6 +66,15 @@ sub signature_key {
     }
     return $key;
 }
+
+sub normalized_request_url {
+    my $self = shift;
+    my $url = $self->request_url;
+    Net::OAuth::Message::_ensure_uri_object($url);
+    $url->query(undef);
+    return $url;
+}
+
 
 =head1 NAME
 

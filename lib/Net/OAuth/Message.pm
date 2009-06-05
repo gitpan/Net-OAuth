@@ -4,6 +4,9 @@ use strict;
 use base qw/Class::Data::Inheritable Class::Accessor/;
 use URI::Escape;
 use UNIVERSAL::require;
+use Net::OAuth;
+use URI;
+use URI::QueryParam;
 
 use constant OAUTH_PREFIX => 'oauth_';
 
@@ -86,6 +89,18 @@ sub check {
 sub encode {
     my $str = shift;
     $str = "" unless defined $str;
+    unless($Net::OAuth::SKIP_UTF8_DOUBLE_ENCODE_CHECK) {
+        if ($str =~ /[\x80-\xFF]/) {
+            Encode->require;
+            no strict 'subs';
+            eval {
+                Encode::decode_utf8($str, 1);
+            };
+            unless ($@) {
+                warn "Warning: It looks like you are attempting to encode bytes that are already UTF-8 encoded.  You should probably use decode_utf8() first.  See the Net::OAuth manpage, I18N section";
+            }
+        }
+    }
     return URI::Escape::uri_escape_utf8($str,'^\w.~-');
 }
 
@@ -112,6 +127,13 @@ sub gather_message_parameters {
     if ($self->{extra_params} and !$opts{no_extra} and $self->allow_extra_params) {
         foreach my $k (keys %{$self->{extra_params}}) {
             $params{$k} = $self->{extra_params}{$k};
+        }
+        if ($self->can('request_url')) {
+            my $url = $self->request_url;
+            _ensure_uri_object($url);         
+            foreach my $k ($url->query_param) {
+                $params{$k} = $url->query_param($k);
+            }
         }
     }
     if ($opts{hash}) {
@@ -158,15 +180,23 @@ sub to_authorization_header {
     my $self = shift;
     my $realm = shift;
     my $sep = shift || ",";
-    return join($sep, "OAuth realm=\"$realm\"",
-        $self->gather_message_parameters(quote => '"', add => [qw/signature/], no_extra => 1));
+    if (defined $realm) {
+        $realm = "realm=\"$realm\"$sep";
+    }
+    else {
+        $realm = "";
+    }
+    return "OAuth $realm" .
+        join($sep, $self->gather_message_parameters(quote => '"', add => [qw/signature/], no_extra => 1));
 }
 
 sub from_authorization_header {
     my $proto = shift;
+    my $header = shift;
     my $class = ref $proto || $proto;
-    my @header = split /[\s]*,[\s]*/, shift;
-    shift @header;
+    die "Header must start with \"OAuth \"" unless $header =~ s/OAuth //;
+    my @header = split /[\s]*,[\s]*/, $header;
+    shift @header if $header[0] =~ /^realm=/i;
     return $class->_from_pairs(\@header, @_)
 }
 
@@ -221,15 +251,15 @@ sub from_hash {
     return $class->new(%msg_params, %api_params);
 }
 
+sub _ensure_uri_object {
+    $_[0] = UNIVERSAL::isa($_[0], 'URI') ? $_[0] : URI->new($_[0]);
+}
+
 sub from_url {
 	my $proto = shift;
     my $class = ref $proto || $proto;
     my $url = shift;
-	require URI;
-	require URI::QueryParam;
-    if (!UNIVERSAL::isa($url, 'URI')) {
-		$url = URI->new($url);
-	}
+	_ensure_uri_object($url);
 	return $class->from_hash($url->query_form_hash, @_);
 }
 
@@ -252,19 +282,21 @@ sub to_hash {
 
 sub to_url {
 	my $self = shift;
-	my $uri = shift;
-	if (!defined $uri and $self->can('request_url') and defined $self->request_url) {
-		$uri = $self->request_url;
+	my $url = shift;
+	if (!defined $url and $self->can('request_url') and defined $self->request_url) {
+		$url = $self->request_url;
 	}
-	if (defined $uri) {
-		require URI;
-		require URI::QueryParam;
-		$uri = URI->new("$uri");
+	if (defined $url) {
+        _ensure_uri_object($url);
+        $url = $url->clone; # don't modify the URL that was passed in
+        $url->query(undef); # remove any existing query params, as these may cause the signature to break	
 		my $params = $self->to_hash;
+		my $sep = '?';
 		foreach my $k (sort keys %$params) {
-			$uri->query_param($k, $params->{$k});
+		    $url .= $sep . encode($k) . '=' . encode( $params->{$k} );
+            $sep = '&' if $sep eq '?';
 		}
-		return $uri;
+		return $url;
 	}
 	else {
 		return $self->to_post_body;
