@@ -8,7 +8,7 @@ sub allow_extra_params {1}
 
 =head1 NAME
 
-Net::OAuth::RequestTokenResponse - An OAuth protocol response for an Access Token
+Net::OAuth::RequestTokenResponse - An OAuth protocol response for an Request Token
 
 =head1 SEE ALSO
 

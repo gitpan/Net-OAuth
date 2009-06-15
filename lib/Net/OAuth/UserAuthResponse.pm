@@ -2,6 +2,7 @@ package Net::OAuth::UserAuthResponse;
 use warnings;
 use strict;
 use base 'Net::OAuth::Response';
+use Net::OAuth;
 
 sub allow_extra_params {1}
 
