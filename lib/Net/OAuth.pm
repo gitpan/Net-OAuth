@@ -8,8 +8,8 @@ sub PROTOCOL_VERSION_1_0A() {1.001}
 
 sub OAUTH_VERSION() {'1.0'}
 
-our $VERSION = '0.19';
-our $SKIP_UTF8_DOUBLE_ENCODE_CHECK = 0;
+our $VERSION = '0.20';
+our $SKIP_UTF8_DOUBLE_ENCODE_CHECK = 0; # this is not actually used any more
 our $PROTOCOL_VERSION = PROTOCOL_VERSION_1_0;
 
 sub request {
@@ -94,7 +94,7 @@ Net::OAuth - OAuth protocol support
     use CGI;
     my $q = new CGI;
 
-    my $request = Net::OAuth->request("request token")->from_hash($q->Vars,
+    my $request = Net::OAuth->request("request token")->from_hash({$q->Vars},
         request_url => 'https://photos.example.net/request_token',
         request_method => $q->request_method,
         consumer_secret => 'kd94hf93k423kf44',
@@ -203,9 +203,9 @@ The more verbose way is to use the class directly:
 
 You can also create a message by deserializing it from a Authorization header, URL, query hash, or POST body
 
- $request = Net::OAuth->request('protected resource')->from_authorization_header($header, %api_params);
+ $request = Net::OAuth->request('protected resource')->from_authorization_header($ENV{HTTP_AUTHORIZATION}, %api_params);
  $request = Net::OAuth->request('protected resource')->from_url($url, %api_params);
- $request = Net::OAuth->request('protected resource')->from_hash($q->Vars, %api_params); # CGI
+ $request = Net::OAuth->request('protected resource')->from_hash({$q->Vars}, %api_params); # CGI
  $request = Net::OAuth->request('protected resource')->from_hash($c->request->params, %api_params); # Catalyst
  $response = Net::OAuth->response('request token')->from_post_body($response_content, %api_params);
 
@@ -363,24 +363,7 @@ See L<Net::OAuth::ConsumerRequest>
 
 =head2 I18N
 
-Per the OAuth spec, when making the signature Net::OAuth first encodes parameters to UTF-8. This means that any parameters you pass to Net::OAuth, if they are outside of ASCII character set, should be run through Encode::decode() (or an equivalent PerlIO layer) first to decode them to Perl's internal character sructure.
-
-There is a check in Net::OAuth's parameter encoding function that guesses if the data you are passing in looks like it is already UTF-8 and warns that you should decode it first. This accidental double-encoding of UTF-8 may be a source of headaches - if you find that the signature check is failing when you send non-ASCII data, that is a likely cause. 
-
-You can silence this warning by setting:
-
-    $Net::OAuth::SKIP_UTF8_DOUBLE_ENCODE_CHECK = 1;
-
-Following is an example of decoding some UTF-8 form data before sending it in an OAuth messaage (from the Twitter demo included in the Net::OAuth package):
-
-    my $request = Net::OAuth->request("protected resource")->new(
-        $self->_default_request_params,
-        request_url => 'http://twitter.com/statuses/update.xml',
-        token => $self->session->param('token'),
-        token_secret => $self->session->param('token_secret'),
-        request_method => 'POST',
-        extra_params => {status => decode_utf8($self->query->param('status'))}
-    );
+Per the OAuth spec, when making the signature Net::OAuth first encodes parameters to UTF-8. This means that any parameters you pass to Net::OAuth, if they might be outside of ASCII character set, should be run through Encode::decode() (or an equivalent PerlIO layer) first to decode them to Perl's internal character sructure.
 
 =head2 OAUTH 1.0A
 
@@ -438,6 +421,34 @@ Check out L<Net::OAuth::Simple> - it has a simpler API that may be more to your 
 Check out L<Net::Twitter::OAuth> for a Twitter-specific OAuth API
 
 Check out L<WWW::Netflix::API> for a Netflix-specific OAuth API
+
+=head1 TODO
+
+=over
+
+=item * Support for repeating/multivalued parameters
+
+=item * Add convenience methods for SPs
+
+Something like:
+    
+    # direct from CGI.pm object
+    $request = Net::OAuth->request('Request Token')->from_cgi_query($cgi, %api_params);
+    
+    # direct from Catalyst::Request object
+    $request = Net::OAuth->request('Request Token')->from_catalyst_request($c->req, %api_params); 
+    
+    # from Auth header and GET and POST params in one
+    local $/;
+    my $post_body = <STDIN>;
+    $request = Net::OAuth->request('Request Token')->from_auth_get_and_post(
+        $ENV{HTTP_AUTHORIZATION}, 
+        $ENV{QUERY_STRING},
+        $post_body,
+        %api_params
+    );
+
+=back
 
 =head1 AUTHOR
 
