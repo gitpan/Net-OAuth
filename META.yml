@@ -1,6 +1,6 @@
 ---
 name: Net-OAuth
-version: 0.21
+version: 0.22
 author:
   - 'Keith Grennan <kgrennan@cpan.org>'
 abstract: An implementation of the OAuth protocol
@@ -21,7 +21,7 @@ configure_requires:
 provides:
   Net::OAuth:
     file: lib/Net/OAuth.pm
-    version: 0.21
+    version: 0.22
   Net::OAuth::AccessTokenRequest:
     file: lib/Net/OAuth/AccessTokenRequest.pm
   Net::OAuth::AccessTokenResponse:
@@ -34,7 +34,7 @@ provides:
     file: lib/Net/OAuth/ProtectedResourceRequest.pm
   Net::OAuth::Request:
     file: lib/Net/OAuth/Request.pm
-    version: 0.21
+    version: 0.22
   Net::OAuth::RequestTokenRequest:
     file: lib/Net/OAuth/RequestTokenRequest.pm
   Net::OAuth::RequestTokenResponse:
@@ -59,8 +59,8 @@ provides:
     file: lib/Net/OAuth/V1_0A/RequestTokenResponse.pm
   Net::OAuth::V1_0A::UserAuthResponse:
     file: lib/Net/OAuth/V1_0A/UserAuthResponse.pm
-  Net::OAuth::xAuthAccessTokenRequest:
-    file: lib/Net/OAuth/xAuthAccessTokenRequest.pm
+  Net::OAuth::XauthAccessTokenRequest:
+    file: lib/Net/OAuth/XauthAccessTokenRequest.pm
 generated_by: Module::Build version 0.35
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
