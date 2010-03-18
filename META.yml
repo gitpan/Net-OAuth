@@ -1,6 +1,6 @@
 ---
 name: Net-OAuth
-version: 0.22
+version: 0.23
 author:
   - 'Keith Grennan <kgrennan@cpan.org>'
 abstract: An implementation of the OAuth protocol
@@ -8,20 +8,20 @@ license: perl
 resources:
   license: http://dev.perl.org/licenses/
 build_requires:
+  Test::More: 0.66
+requires:
   Class::Accessor: 0.31
   Class::Data::Inheritable: 0.06
   Digest::HMAC_SHA1: 1.01
   Digest::SHA1: 2.12
   Encode: 2.35
-  Test::More: 0.66
-  UNIVERSAL::require: 0.10
   URI::Escape: 3.28
 configure_requires:
   Module::Build: 0.35
 provides:
   Net::OAuth:
     file: lib/Net/OAuth.pm
-    version: 0.22
+    version: 0.23
   Net::OAuth::AccessTokenRequest:
     file: lib/Net/OAuth/AccessTokenRequest.pm
   Net::OAuth::AccessTokenResponse:
@@ -34,7 +34,7 @@ provides:
     file: lib/Net/OAuth/ProtectedResourceRequest.pm
   Net::OAuth::Request:
     file: lib/Net/OAuth/Request.pm
-    version: 0.22
+    version: 0.23
   Net::OAuth::RequestTokenRequest:
     file: lib/Net/OAuth/RequestTokenRequest.pm
   Net::OAuth::RequestTokenResponse:
