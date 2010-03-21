@@ -92,4 +92,6 @@ Revision history for Net-OAuth
   
 0.24   Sun, 21 Mar 2010 03:39:40 UTC
   Fix test breakage in 0.23
-  
+
+0.25   Sun, 21 Mar 2010 03:50:40 UTC
+  Gah, $VERSION lameness
