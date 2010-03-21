@@ -1,6 +1,6 @@
 ---
 name: Net-OAuth
-version: 0.23
+version: 0.24
 author:
   - 'Keith Grennan <kgrennan@cpan.org>'
 abstract: An implementation of the OAuth protocol
@@ -21,7 +21,7 @@ configure_requires:
 provides:
   Net::OAuth:
     file: lib/Net/OAuth.pm
-    version: 0.23
+    version: 0.24
   Net::OAuth::AccessTokenRequest:
     file: lib/Net/OAuth/AccessTokenRequest.pm
   Net::OAuth::AccessTokenResponse:
@@ -34,7 +34,7 @@ provides:
     file: lib/Net/OAuth/ProtectedResourceRequest.pm
   Net::OAuth::Request:
     file: lib/Net/OAuth/Request.pm
-    version: 0.23
+    version: 0
   Net::OAuth::RequestTokenRequest:
     file: lib/Net/OAuth/RequestTokenRequest.pm
   Net::OAuth::RequestTokenResponse:
